@@ -2,10 +2,8 @@
 #include <queue>
 
 using namespace std;
-
-int visit[101] = {
-    0,
-};
+// bfs를 기본 문제 한문제 밖에 안풀어봐서 오래걸렸음
+// 애초에 bfs문제인지도 몰랐고 처음부터 다 생각해냈음
 
 void bacon(int (*fr)[101], int mp, int s, int N)
 {
