@@ -8,6 +8,7 @@ int arr[9][9];
 //     0,
 // };
 vector<pair<int, int>> v;
+int f = 0;
 
 int check(int tmp, int x, int y)
 {
@@ -40,10 +41,13 @@ void dfs(int x, int y, int idx, int cnt)
                 cout << arr[i][j] << " ";
             cout << "\n";
         }
+        f = 1;
         return;
     }
     for (int i = 0; i < 9; i++)
     {
+        if (f)
+            return;
         if (check(i + 1, x, y))
         {
             idx++;
