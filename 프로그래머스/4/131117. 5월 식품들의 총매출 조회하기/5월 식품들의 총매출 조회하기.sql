@@ -1,0 +1,8 @@
+-- 코드를 입력하세요
+SELECT fp.PRODUCT_ID,fp.PRODUCT_NAME, fp.PRICE*SUM(fo.AMOUNT) TOTAL_SALES
+from FOOD_PRODUCT fp
+join FOOD_ORDER fo
+on fp.PRODUCT_ID=fo.PRODUCT_ID
+where DATE_FORMAT(fo.PRODUCE_DATE,'%Y-%m')='2022-05'
+group by fo.PRODUCT_ID
+order by TOTAL_SALES desc, PRODUCT_ID asc
