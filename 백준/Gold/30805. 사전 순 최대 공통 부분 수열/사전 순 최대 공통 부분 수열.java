@@ -21,26 +21,7 @@ public class Main {
 
 	static void Solution(int[] A, int[] B) {
 		ArrayList<Integer> tmp = new ArrayList<>();
-		int a_index = 0, b_index = 0;
-		while (true) {
-			int max = 0;
-			int maxIdxA = 0;
-			int maxIdxB = 0;
-			for (int i = a_index; i < A.length; i++) {
-				for (int j = b_index; j < B.length; j++) {
-					if (A[i] == B[j] && max < A[i]) {
-						max = A[i];
-						maxIdxA = i + 1;
-						maxIdxB = j + 1;
-					}
-				}
-			}
-			if (max == 0)
-				break;
-			tmp.add(max);
-			a_index = maxIdxA;
-			b_index = maxIdxB;
-		}
+		recursion(A, B, 0, 0, tmp);
 		System.out.println(tmp.size());
 		if (tmp.isEmpty()) {
 			return;
@@ -50,5 +31,27 @@ public class Main {
 			sb.append(t).append(" ");
 		}
 		System.out.println(sb);
+	}
+
+	static void recursion(int[] A, int[] B, int a_index, int b_index, ArrayList<Integer> tmp) {
+		int max = 0;
+		int maxIdxA = 0;
+		int maxIdxB = 0;
+		for (int i = a_index; i < A.length; i++) {
+			for (int j = b_index; j < B.length; j++) {
+				if (A[i] == B[j]) {
+					if (max < A[i]) {
+						// System.out.println(A[i] + " " + i + " " + j);
+						max = A[i];
+						maxIdxA = i;
+						maxIdxB = j;
+					}
+				}
+			}
+		}
+		if (max == 0)
+			return;
+		tmp.add(max);
+		recursion(A, B, maxIdxA + 1, maxIdxB + 1, tmp);
 	}
 }
