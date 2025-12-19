@@ -2,48 +2,59 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-	static int[][] dp;
-	static String str1, str2;
-	static StringBuilder sb = new StringBuilder();
+	static int[][] words;
+	static char[] a, b;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		str1 = br.readLine();
-		str2 = br.readLine();
-		int len1 = str1.length();
-		int len2 = str2.length();
-		dp = new int[len1 + 1][len2 + 1];
-		for (int i = 1; i < len1 + 1; i++) {
-			for (int j = 1; j < len2 + 1; j++) {
-				if (str1.charAt(i - 1) == str2.charAt(j - 1)) {
-					dp[i][j] = dp[i - 1][j - 1] + 1;
+		String st1 = br.readLine();
+		String st2 = br.readLine();
+		int n1 = st1.length();
+		int n2 = st2.length();
+		a = new char[n1];
+		b = new char[n2];
+		for (int i = 0; i < n1; i++) {
+			a[i] = st1.charAt(i);
+		}
+		for (int i = 0; i < n2; i++) {
+			b[i] = st2.charAt(i);
+		}
+		words = new int[n1 + 1][n2 + 1];
+
+		for (int i = 0; i < n1; i++) {
+			for (int j = 0; j < n2; j++) {
+				if (a[i] == b[j]) {
+					words[i + 1][j + 1] = words[i][j] + 1;
 				} else {
-					dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+					words[i + 1][j + 1] = Math.max(words[i][j + 1], words[i + 1][j]);
 				}
 			}
 		}
+		// for (int i = 0; i < n1 + 1; i++) {
+		// 	for (int j = 0; j < n2 + 1; j++) {
+		// 		System.out.print(words[i][j]);
+		// 	}
+		// 	System.out.println();
+		// }
 
-		int i = len1;
-		int j = len2;
 		Stack<Character> st = new Stack<>();
-		while (i > 0 && j > 0) {
-			if (dp[i][j] == dp[i - 1][j]) {
-				i--;
-			} else if (dp[i][j] == dp[i][j - 1]) {
+		int i = n1, j = n2;
+		while (words[i][j] > 0) {
+			if (words[i][j] == words[i][j - 1]) {
 				j--;
+			} else if (words[i][j] == words[i - 1][j]) {
+				i--;
 			} else {
-				st.push(str1.charAt(i - 1));
-				// System.out.println("push: " + str1.charAt(i - 1) + " " + (i - 1));
+				st.push(b[j - 1]);
 				i--;
 				j--;
 			}
 		}
-		while (!st.isEmpty()) {
+		StringBuilder sb = new StringBuilder();
+		while (!st.empty()) {
 			sb.append(st.pop());
 		}
-
-		System.out.println(dp[len1][len2]);
+		System.out.println(words[n1][n2]);
 		System.out.println(sb);
 	}
-
 }
