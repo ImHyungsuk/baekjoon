@@ -1,43 +1,42 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
-	static int N, min;
-	static int[][] colors, dp;
+	static int[][] cost, dp;
+	static int N;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
-
 		N = Integer.parseInt(st.nextToken());
-		colors = new int[N + 1][3];
-		dp = new int[N + 1][3];
-		for (int i = 1; i < N + 1; i++) {
+		cost = new int[N][3];
+		dp = new int[N][3];
+		for (int i = 0; i < N; i++) {
 			st = new StringTokenizer(br.readLine(), " ");
-			colors[i][0] = Integer.parseInt(st.nextToken());
-			colors[i][1] = Integer.parseInt(st.nextToken());
-			colors[i][2] = Integer.parseInt(st.nextToken());
+			for (int j = 0; j < 3; j++) {
+				cost[i][j] = Integer.parseInt(st.nextToken());
+			}
 		}
-		min = Integer.MAX_VALUE;
+		int min = Integer.MAX_VALUE;
 		for (int i = 0; i < 3; i++) {
-			Solution(i);
-			min = Math.min(min, dp[1][i]);
+			for (int k = 0; k < 3; k++) {
+				if (k == i) {
+					dp[0][k] = Integer.MAX_VALUE;
+				} else
+					dp[0][k] = cost[N - 1][i] + cost[0][k];
+			}
+			for (int j = 1; j < N - 1; j++) {
+				dp[j][0] = Math.min(dp[j - 1][1], dp[j - 1][2]) + cost[j][0];
+				dp[j][1] = Math.min(dp[j - 1][0], dp[j - 1][2]) + cost[j][1];
+				dp[j][2] = Math.min(dp[j - 1][1], dp[j - 1][0]) + cost[j][2];
+			}
+			for (int k = 0; k < 3; k++) {
+				if (k == i) {
+					continue;
+				}
+				min = Math.min(min, dp[N - 2][k]);
+			}
 		}
 		System.out.println(min);
-	}
-
-	static void Solution(int start) {
-		for (int i = 0; i < 3; i++) {
-			if (start == i) {
-				dp[N][i] = 100001;
-				continue;
-			}
-			dp[N][i] = colors[N][i];
-		}
-		for (int i = N - 1; i > 0; i--) {
-			dp[i][0] = Math.min(dp[i + 1][1], dp[i + 1][2]) + colors[i][0];
-			dp[i][1] = Math.min(dp[i + 1][0], dp[i + 1][2]) + colors[i][1];
-			dp[i][2] = Math.min(dp[i + 1][1], dp[i + 1][0]) + colors[i][2];
-		}
 	}
 }
