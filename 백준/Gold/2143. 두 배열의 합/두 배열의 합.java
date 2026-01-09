@@ -2,73 +2,69 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-	static int T, N, M;
-	static long[] a, b, aSum, bSum;
+	static long T;
+	static int N, M;
+	static long[] a, b, a_sum, b_sum;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		T = Integer.parseInt(st.nextToken());
+		T = Long.parseLong(st.nextToken());
 		st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken());
-		a = new long[N + 1];
+		a = new long[N+1];
+		a_sum = new long[N + 1];
 		st = new StringTokenizer(br.readLine(), " ");
 		for (int i = 1; i <= N; i++) {
-			a[i] = a[i - 1] + Integer.parseInt(st.nextToken());
+			a[i] = a[i - 1] + Long.parseLong(st.nextToken());
 		}
 		st = new StringTokenizer(br.readLine());
 		M = Integer.parseInt(st.nextToken());
 		b = new long[M + 1];
+		b_sum = new long[M + 1];
 		st = new StringTokenizer(br.readLine(), " ");
 		for (int i = 1; i <= M; i++) {
-			b[i] = b[i - 1] + Integer.parseInt(st.nextToken());
+			b[i] = b[i - 1] + Long.parseLong(st.nextToken());
 		}
 		int aSize = N * (N + 1) / 2;
 		int bSize = M * (M + 1) / 2;
-		aSum = new long[aSize];
-		bSum = new long[bSize];
+		a_sum = new long[aSize];
 		int idx = 0;
-		for (int i = 1; i <= N; i++) {
-			for (int j = i; j <= N; j++) {
-				long av = a[j];
-				av -= a[i - 1];
-				aSum[idx++] = av;
+		for (int i = 0; i < N; i++) {
+			for (int j = i + 1; j <= N; j++) {
+				a_sum[idx++] = a[j] - a[i];
 			}
 		}
+		b_sum = new long[bSize];
 		idx = 0;
-		for (int i = 1; i <= M; i++) {
-			for (int j = i; j <= M; j++) {
-				long av = b[j];
-				av -= b[i - 1];
-				bSum[idx++] = av;
+		for (int i = 0; i < M; i++) {
+			for (int j = i + 1; j <= M; j++) {
+				b_sum[idx++] = b[j] - b[i];
 			}
 		}
+		Arrays.sort(a_sum);
+		Arrays.sort(b_sum);
 
-		Arrays.sort(aSum);
-		Arrays.sort(bSum);
-
-		int left = 0;
-		int right = bSize - 1;
+		int left = 0, right = bSize - 1;
 		long cnt = 0;
 		while (left < aSize && right > -1) {
-			long asv = aSum[left], bsv = bSum[right];
+			long asv = a_sum[left], bsv = b_sum[right];
 			long sum = asv + bsv;
 			if (sum == T) {
 				int ac = 0, bc = 0;
-				while (left < aSize && asv == aSum[left]) {
-					left++;
+				while (left < aSize && asv == a_sum[left]) {
 					ac++;
+					left++;
 				}
-				while (right > -1 && bsv == bSum[right]) {
-					right--;
+				while (right > -1 && bsv == b_sum[right]) {
 					bc++;
+					right--;
 				}
-				cnt += (long)bc * ac;
+				cnt += (long)ac * bc;
 			} else if (sum < T) {
 				left++;
-			} else {
+			} else
 				right--;
-			}
 		}
 		System.out.println(cnt);
 	}
