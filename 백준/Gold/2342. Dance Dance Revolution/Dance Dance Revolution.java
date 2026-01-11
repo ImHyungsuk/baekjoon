@@ -2,51 +2,41 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-	static int N = 0;
+	static int N;
 	static ArrayList<Integer> arr = new ArrayList<>();
+	static int[][] weight = {
+		{1, 2, 2, 2, 2},
+		{0, 1, 3, 4, 3},
+		{0, 3, 1, 3, 4},
+		{0, 4, 3, 1, 3},
+		{0, 3, 4, 3, 1}
+	};
 	static int[][][] dp;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-		while (st.hasMoreTokens()) {
-			arr.add(Integer.parseInt(st.nextToken()));
-			N++;
+		while (st.hasMoreElements()) {
+			int n = Integer.parseInt(st.nextToken());
+			if (n == 0)
+				break;
+			arr.add(n);
 		}
+		N = arr.size();
 		dp = new int[N][5][5];
-		dp[0][0][0] = 0;
-		int ans = Solution(0, 0, 0);
+		int ans = search(0, 0, 0);
 		System.out.println(ans);
 	}
 
-	static int Solution(int turn, int left, int right) {
-		if (turn == arr.size() - 1) {
+	static int search(int idx, int l, int r) {
+		if (idx == N) {
 			return 0;
 		}
-		if (dp[turn][left][right] != 0) {
-			return dp[turn][left][right];
+		if (dp[idx][l][r] != 0) {
+			return dp[idx][l][r];
 		}
-		int nxt = arr.get(turn);
-		int l, r;
-		if (left != 0) {
-			if (left - nxt == 2 || left - nxt == -2) {
-				l = 4;
-			} else if (nxt == left) {
-				l = 1;
-			} else
-				l = 3;
-		} else
-			l = 2;
-		if (right != 0) {
-			if (right - nxt == 2 || right - nxt == -2) {
-				r = 4;
-			} else if (nxt == right) {
-				r = 1;
-			} else
-				r = 3;
-		} else
-			r = 2;
-		dp[turn][left][right] = Math.min(Solution(turn + 1, nxt, right) + l, Solution(turn + 1, left, nxt) + r);
-		return dp[turn][left][right];
+		int nxt = arr.get(idx);
+		dp[idx][l][r] = Math.min(search(idx + 1, nxt, r) + weight[l][nxt], search(idx + 1, l, nxt) + weight[r][nxt]);
+		return dp[idx][l][r];
 	}
 }
