@@ -2,41 +2,45 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-	static int N;
+	static int len;
 	static ArrayList<Integer> arr = new ArrayList<>();
-	static int[][] weight = {
-		{1, 2, 2, 2, 2},
+	static int[][][] dp;
+	static int[][] strength = {
+		{0, 2, 2, 2, 2},
 		{0, 1, 3, 4, 3},
 		{0, 3, 1, 3, 4},
 		{0, 4, 3, 1, 3},
 		{0, 3, 4, 3, 1}
 	};
-	static int[][][] dp;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+
 		while (st.hasMoreElements()) {
-			int n = Integer.parseInt(st.nextToken());
-			if (n == 0)
-				break;
-			arr.add(n);
+			int tmp = Integer.parseInt(st.nextToken());
+			if (tmp != 0)
+				arr.add(tmp);
 		}
-		N = arr.size();
-		dp = new int[N][5][5];
+		len = arr.size();
+		dp = new int[5][5][len + 1];
 		int ans = search(0, 0, 0);
+		// System.out.println(dp[0][0][0]);
 		System.out.println(ans);
 	}
 
 	static int search(int idx, int l, int r) {
-		if (idx == N) {
+		// System.out.println("idx: " + idx + " l: " + l + " r: " + r);
+		if (idx == len) {
+			// System.out.println("idx: " + idx + ", len: " + len);
 			return 0;
 		}
-		if (dp[idx][l][r] != 0) {
-			return dp[idx][l][r];
+		if (dp[l][r][idx] != 0) {
+			return dp[l][r][idx];
 		}
 		int nxt = arr.get(idx);
-		dp[idx][l][r] = Math.min(search(idx + 1, nxt, r) + weight[l][nxt], search(idx + 1, l, nxt) + weight[r][nxt]);
-		return dp[idx][l][r];
+		dp[l][r][idx] = Math.min(search(idx + 1, nxt, r) + strength[l][nxt],
+			search(idx + 1, l, nxt) + strength[r][nxt]);
+		return dp[l][r][idx];
 	}
 }
