@@ -3,48 +3,47 @@ import java.io.*;
 
 public class Main {
 	static int N, M;
-	static int[] dx = {-1, 1, 0, 0}, dy = {0, 0, -1, 1};
 	static int[][] map, group;
-	static HashMap<Integer, Integer> groupSize = new HashMap<>();
+	static int[] dx = {-1, 1, 0, 0};
+	static int[] dy = {0, 0, -1, 1};
+	static HashMap<Integer, Integer> hashMap = new HashMap<>();
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+		StringTokenizer st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
-
 		map = new int[N][M];
 		group = new int[N][M];
-		int groupCnt = 1;
 		for (int i = 0; i < N; i++) {
 			String str = br.readLine();
 			for (int j = 0; j < M; j++) {
 				map[i][j] = str.charAt(j) - '0';
 			}
 		}
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < M; j++) {
-				if (map[i][j] == 0 && group[i][j] == 0) {
-					groupSize.put(groupCnt, bfs(j, i, groupCnt));
+		int groupCnt = 1;
+		for (int y = 0; y < N; y++) {
+			for (int x = 0; x < M; x++) {
+				if (map[y][x] == 0 && group[y][x] == 0) {
+					hashMap.put(groupCnt, dfs(y, x, groupCnt));
 					groupCnt++;
 				}
 			}
 		}
-
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < M; j++) {
-				if (group[i][j] == 0) {
-					sb.append(count(j, i));
+		for (int y = 0; y < N; y++) {
+			for (int x = 0; x < M; x++) {
+				if (group[y][x] == 0) {
+					sb.append(count(y, x));
 				} else
 					sb.append(0);
 			}
-			sb.append("\n");
+			sb.append('\n');
 		}
 		System.out.println(sb);
 	}
 
-	static int count(int x, int y) {
+	static int count(int y, int x) {
 		int cnt = 1;
 		if (map[y][x] == 0) {
 			return 0;
@@ -59,47 +58,26 @@ public class Main {
 			}
 			set.add(group[ny][nx]);
 		}
-		try {
-			for (int s : set) {
-				// System.out.println(s+"번째");
-				cnt += groupSize.get(s);
-			}
-		} catch (NullPointerException e) {
-			System.out.println(e.getMessage());
-			throw e;
+		for (int s : set) {
+			cnt += hashMap.get(s);
 		}
 		return cnt % 10;
 	}
 
-	static int bfs(int x, int y, int index) {
-		Queue<Point> q = new ArrayDeque<>();
-		q.add(new Point(x, y));
-		group[y][x] = index;
+	static int dfs(int y, int x, int index) {
 		int cnt = 1;
-		while (!q.isEmpty()) {
-			Point cur = q.poll();
-			for (int i = 0; i < 4; i++) {
-				int nx = cur.x + dx[i];
-				int ny = cur.y + dy[i];
-				if (nx < 0 || ny < 0 || nx >= M || ny >= N) {
-					continue;
-				}
-				if (group[ny][nx] == 0 && map[ny][nx] == 0) {
-					group[ny][nx] = index;
-					cnt++;
-					q.add(new Point(nx, ny));
-				}
+		group[y][x] = index;
+		for (int i = 0; i < 4; i++) {
+			int ny = y + dy[i];
+			int nx = x + dx[i];
+			if (ny < 0 || nx < 0 || ny >= N || nx >= M) {
+				continue;
+			}
+			if (group[ny][nx] == 0 && map[ny][nx] == 0) {
+				group[ny][nx] = index;
+				cnt += dfs(ny, nx, index);
 			}
 		}
 		return cnt;
-	}
-}
-
-class Point {
-	int x, y;
-
-	public Point(int x, int y) {
-		this.x = x;
-		this.y = y;
 	}
 }
