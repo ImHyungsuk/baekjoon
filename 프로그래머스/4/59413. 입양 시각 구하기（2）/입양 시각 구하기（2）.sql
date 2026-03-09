@@ -1,14 +1,17 @@
 -- 코드를 입력하세요
 with recursive hours as(
-    select 0 as hour
+    select 0 hour
+    
     union all
+    
     select hour+1 from hours where hour<23
 )
-SELECT
+
+select
 h.hour,
-coalesce(count(animal_id),0)count
+count(o.animal_id)
 from hours h
-left join animal_outs a
-on h.hour=hour(a.datetime)
-group by hour
-order by hour
+left join animal_outs o
+on h.hour=hour(o.datetime)
+group by h.hour
+order by h.hour
