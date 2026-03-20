@@ -1,40 +1,40 @@
 import java.util.*;
-
 class Solution {
     public int solution(int bridge_length, int weight, int[] truck_weights) {
-        int answer = 0;
-        Queue<Truck>complete=new ArrayDeque<>();
-        Queue<Truck>proceeding =new ArrayDeque<>();
-        int idx=1;
-        int cur_weight=truck_weights[0];
-        proceeding.add(new Truck(truck_weights[0],1));
-        answer=1;
-        while(!proceeding.isEmpty()){
-            answer++;
-            Truck tmp=proceeding.peek();
-            if(tmp.t==answer-bridge_length){
-                // System.out.printf("[Out]time: %d, first.time:%d, index:%d\n",answer,tmp.t,tmp.w);
-                proceeding.poll();
-                cur_weight-=tmp.w;
+        int answer = 1;
+        int cur=0,idx=0;
+        Queue<Integer>waitQ=new ArrayDeque<>();
+        Queue<Truck>processQ=new ArrayDeque<>();
+        for(int i=0;i<truck_weights.length;i++){
+            waitQ.add(truck_weights[i]);
+        }
+        while(!waitQ.isEmpty()){
+            while(!waitQ.isEmpty()&&cur+waitQ.peek()<=weight){
+                if(!processQ.isEmpty()&&answer-processQ.peek().time==bridge_length){
+                    cur-=processQ.poll().weight;
+                }
+                int w=waitQ.poll();
+                processQ.add(new Truck(w,answer));
+                cur+=w;
+                answer++;
             }
-            if(idx>=truck_weights.length) continue;
-            int cur=truck_weights[idx];
-            if(cur+cur_weight<=weight){
-                // System.out.printf("[In]time: %d, index:%d, cur_w:%d, max:%d\n",answer,idx,cur+cur_weight,weight);
-                proceeding.add(new Truck(cur,answer));
-                cur_weight+=cur;
-                idx++;
+            if(!processQ.isEmpty()){
+                Truck out=processQ.poll();
+                answer=out.time+bridge_length;
+                cur-=out.weight;                
             }
+        }
+        while(!processQ.isEmpty()){
+            answer=processQ.poll().time+bridge_length;
         }
         return answer;
     }
 }
 
 class Truck{
-    int w, t;
-    
-    public Truck(int w,int t){
-        this.w=w;
-        this.t=t;
+    int weight,time;
+    public Truck(int weight, int time){
+        this.weight=weight;
+        this.time=time;
     }
 }
