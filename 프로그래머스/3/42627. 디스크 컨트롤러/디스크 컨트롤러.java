@@ -3,52 +3,46 @@ import java.util.*;
 class Solution {
     public int solution(int[][] jobs) {
         int answer = 0;
-        PriorityQueue<Job>pq=new PriorityQueue<>();
-        ArrayList<Job>arr=new ArrayList<>();
-        int idx=0,time=0;
-        while(idx<jobs.length){
-            arr.add(new Job(idx,jobs[idx][0],jobs[idx][1]));
-            idx++;
-        }
-        arr.sort(new Comparator<Job>(){
-            @Override
-            public int compare(Job o1, Job o2){
-                return o1.time-o2.time;
+        Arrays.sort(jobs,(a,b)->a[0]-b[0]);
+        PriorityQueue<Task>waitQ=new PriorityQueue<>();
+        ArrayList<Integer>arr=new ArrayList<>();
+        int time=0;
+        int idx=0;
+        int cnt=0;
+        while(cnt<jobs.length){
+            if(waitQ.isEmpty()&&idx<jobs.length&&time<jobs[idx][0]){
+                time=jobs[idx][0];
+                waitQ.add(new Task(idx,jobs[idx][0],jobs[idx][1]));
+                idx++;
             }
-        });
-        idx=0;
-        while(idx<arr.size() || !pq.isEmpty()){
-            while(idx<arr.size() && time>=arr.get(idx).time){
-                pq.add(arr.get(idx++));
+            while(idx<jobs.length&&jobs[idx][0]<=time){
+                waitQ.add(new Task(idx,jobs[idx][0],jobs[idx][1]));
+                idx++;
             }
-            if(!pq.isEmpty()){
-                Job w= pq.poll();
-                time+=w.amount;
-                answer+=time-w.time;
-            }else {
-                time=arr.get(idx).time;
-            }
+            Task cur=waitQ.poll();
+            time+=cur.l;
+            answer+=time-cur.s;
+            cnt++;
         }
         answer/=jobs.length;
         return answer;
     }
 }
 
-class Job implements Comparable<Job>{
-    int num,time,amount;
-    public Job(int num, int time, int amount){
+class Task implements Comparable<Task>{
+    int num,s,l;
+    public Task(int num,int s, int l){
         this.num=num;
-        this.time=time;
-        this.amount=amount;
+        this.s=s;
+        this.l=l;
     }
     
     @Override
-    public int compareTo(Job o){
-        if(this.amount==o.amount){
-            if(this.time==o.time)
-                return this.num-o.num;
-            return this.time-o.time;
+    public int compareTo(Task t){
+        if(this.l==t.l){
+            return this.s-t.s;
+        }else{
+            return this.l-t.l;
         }
-        return this.amount-o.amount;
     }
 }
