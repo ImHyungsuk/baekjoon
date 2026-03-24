@@ -1,32 +1,40 @@
 import java.util.*;
-import java.io.*;
-
 class Solution {
     public int[] solution(String[] operations) {
-        int[] answer = new int[2];
-        TreeMap<Integer,Integer>map=new TreeMap<>();
-        for(String str:operations){
-            StringTokenizer st=new StringTokenizer(str," ");
-            String op=st.nextToken();
-            int num=Integer.parseInt(st.nextToken());
-            if(op.equals("I")){
-                map.put(num,map.getOrDefault(num,0)+1);
+        int[] answer = {};
+        PriorityQueue<Integer>maxQ=new PriorityQueue<>(Comparator.reverseOrder());
+        PriorityQueue<Integer>minQ=new PriorityQueue<>();
+        Map<Integer,Integer>count=new HashMap<>();
+        for(String op:operations){
+            String[]line=op.split(" ");
+            if(line[0].equals("I")){
+                Integer num=Integer.parseInt(line[1]);
+                count.put(num,count.getOrDefault(num,0)+1);
+                maxQ.add(num);
+                minQ.add(num);
+                // System.out.printf("%d in\n",num);
             }else{
-                if(map.isEmpty())continue;
-                int key=(num==1)?map.lastKey():map.firstKey();
-                if(map.put(key,map.get(key)-1)==1){
-                    map.remove(key);
+                if(maxQ.isEmpty())continue;
+                Integer num=Integer.parseInt(line[1]);
+                if(num==1){
+                    int a=maxQ.poll();
+                    count.put(a,count.get(a)-1);
+                    // System.out.printf("%d out\n",a);
+                }else{
+                    int a=minQ.poll();
+                    count.put(a,count.get(a)-1);
+                    // System.out.printf("%d out\n",a);
                 }
             }
+            while(!maxQ.isEmpty()&&count.get(maxQ.peek())==0)maxQ.poll();
+            while(!minQ.isEmpty()&&count.get(minQ.peek())==0)minQ.poll();
         }
-        if(map.isEmpty()){
-            answer[0]=0;
-            answer[1]=0;
-        }else{
-            answer[0]=map.lastKey();
-            answer[1]=map.firstKey();
+        if(maxQ.isEmpty())answer=new int[]{0,0};
+        else{
+            answer=new int[2];
+            answer[0]=maxQ.peek();
+            answer[1]=minQ.peek();
         }
-        
         return answer;
     }
 }
