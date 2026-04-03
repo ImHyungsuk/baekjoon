@@ -16,8 +16,7 @@ class Solution {
             visited[wires[i][0]]=true;
             visited[wires[i][1]]=true;
             int a=count(n,wires[i][0],wires,visited);
-            int b=count(n,wires[i][1],wires,visited);
-            int tmp=a>b?a-b:b-a;
+            int tmp=a>n/2?2*a-n:n-2*a;
             answer=answer>tmp?tmp:answer;
         }
         return answer;
