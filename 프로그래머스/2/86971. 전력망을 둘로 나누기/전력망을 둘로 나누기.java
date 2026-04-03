@@ -1,41 +1,34 @@
 import java.util.*;
 class Solution {
-    static boolean[]visited;
     static ArrayList<Integer>[]next;
     public int solution(int n, int[][] wires) {
-        int answer = Integer.MAX_VALUE-1;
-        visited=new boolean[n+1];
+        int answer = 101;
         next=new ArrayList[n+1];
         for(int i=1;i<=n;i++){
             next[i]=new ArrayList<>();
         }
         for(int i=0;i<wires.length;i++){
-            int a=wires[i][0];
-            int b=wires[i][1];
-            next[a].add(b);
-            next[b].add(a);
+            next[wires[i][0]].add(wires[i][1]);
+            next[wires[i][1]].add(wires[i][0]);
         }
         for(int i=0;i<wires.length;i++){
-            int a=wires[i][0];
-            int b=wires[i][1];
-            visited[a]=true;
-            int tmp1=dfs(a,b);
-            visited[b]=true;
-            int tmp2=dfs(b,a);
-            // System.out.println(i+"번: "+tmp1+" "+tmp2);
-            int sum=tmp1-tmp2;
-            sum=sum<0?-sum:sum;
-            answer=Math.min(answer,sum);
-            Arrays.fill(visited,false);
+            boolean[]visited=new boolean[n+1];
+            visited[wires[i][0]]=true;
+            visited[wires[i][1]]=true;
+            int a=count(n,wires[i][0],wires,visited);
+            int b=count(n,wires[i][1],wires,visited);
+            int tmp=a>b?a-b:b-a;
+            answer=answer>tmp?tmp:answer;
         }
         return answer;
     }
-    static int dfs(int a,int b){
+
+    static int count(int n,int cur,int[][]wires,boolean[]visited){
         int cnt=1;
-        for(int nxt:next[a]){
-            if(nxt!=b&&!visited[nxt]){
+        for(int nxt:next[cur]){
+            if(!visited[nxt]){
                 visited[nxt]=true;
-                cnt+=dfs(nxt,b);
+                cnt+=count(n,nxt,wires,visited);
             }
         }
         return cnt;
