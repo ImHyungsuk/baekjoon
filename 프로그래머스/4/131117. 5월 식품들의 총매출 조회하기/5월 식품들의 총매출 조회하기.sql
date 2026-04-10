@@ -1,8 +1,12 @@
 -- 코드를 입력하세요
-SELECT fp.PRODUCT_ID,fp.PRODUCT_NAME, fp.PRICE*SUM(fo.AMOUNT) TOTAL_SALES
-from FOOD_PRODUCT fp
-join FOOD_ORDER fo
-on fp.PRODUCT_ID=fo.PRODUCT_ID
-where DATE_FORMAT(fo.PRODUCE_DATE,'%Y-%m')='2022-05'
-group by fo.PRODUCT_ID
-order by TOTAL_SALES desc, PRODUCT_ID asc
+SELECT
+p.product_id,
+p.product_name,
+sum(p.price*o.amount) total_sales
+from food_product p
+join food_order o
+on p.product_id=o.product_id
+where o.produce_date like '2022-05%'
+group by p.product_id
+# having o.produce_date like '2022-05%'
+order by sum(p.price*o.amount) desc, p.product_id asc
