@@ -2,49 +2,61 @@ import java.util.*;
 class Solution {
     public int[] solution(String[] genres, int[] plays) {
         int[] answer = {};
-        int l=genres.length;
-        Map<String,List<Song>>count=new HashMap<>();
-        Map<String,Integer>genrePlay=new HashMap<>();
-        PriorityQueue<Genre>pq=new PriorityQueue<>((g1,g2)->g2.plays-g1.plays);
-        for(int i=0;i<l;i++){
-            if(!count.containsKey(genres[i])) {
-                count.put(genres[i],new ArrayList<>());
-                genrePlay.put(genres[i],0);
+        ArrayList<Integer>arr=new ArrayList<>();
+        int len=genres.length;
+        HashMap<String,Integer> genreCount=new HashMap<>();
+        for(int i=0;i<len;i++){
+            genreCount.put(genres[i],genreCount.getOrDefault(genres[i],0)+plays[i]);
+        }
+        PriorityQueue<GenrePlay>gpq=new PriorityQueue<>((o1,o2)->Integer.compare(o2.plays,o1.plays));
+        for(String k:genreCount.keySet()){
+            gpq.add(new GenrePlay(k,genreCount.get(k)));
+        }
+        while(!gpq.isEmpty()){
+            PriorityQueue<Song>spq=new PriorityQueue<>();
+            String g=gpq.poll().genre;
+            for(int i=0;i<len;i++){
+                if(genres[i].equals(g)){
+                    spq.add(new Song(i,plays[i]));
+                }
             }
-            genrePlay.put(genres[i],genrePlay.get(genres[i])+plays[i]);
-            count.get(genres[i]).add(new Song(i,plays[i]));
-        }
-        int c=0;
-        for(String key:genrePlay.keySet()){
-            pq.add(new Genre(key,genrePlay.get(key)));
-            c+=count.get(key).size()>=2?2:count.get(key).size();
-        }
-        answer=new int[c];
-        int idx=0;
-        while(!pq.isEmpty()){
-            String g=pq.poll().name;
-            List<Song>sList=count.get(g);
-            sList.sort((s1,s2)->s2.plays-s1.plays);
             int cnt=0;
-            while(cnt<sList.size()&&cnt<2) answer[idx++]=sList.get(cnt++).num;
+            while(!spq.isEmpty()&&cnt<2) {
+                arr.add(spq.poll().num);
+                cnt++;
+            }
         }
+        answer=new int[arr.size()];
+        for(int i=0;i<arr.size();i++){
+            answer[i]=arr.get(i);
+        }
+        
         return answer;
     }
 }
 
-class Genre{
-    String name;
+class GenrePlay{
+    String genre;
     int plays;
-    public Genre(String name, int plays){
-        this.name=name;
+    GenrePlay(String genre,int plays){
+        this.genre=genre;
         this.plays=plays;
     }
 }
 
-class Song{
-    int num,plays;
-    public Song(int num,int plays){
+class Song implements Comparable<Song>{
+    int num;
+    int plays;
+    Song(int num,int plays){
         this.num=num;
         this.plays=plays;
+    }
+    
+    @Override
+    public int compareTo(Song o){
+        if(this.plays==o.plays){
+            return this.num-o.num;
+        }
+        return o.plays-this.plays;
     }
 }
