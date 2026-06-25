@@ -1,23 +1,21 @@
 class Solution {
     public int solution(int[][] triangle) {
         int answer = 0;
-        int len=triangle.length;
-        int [][]dp=new int[len][len];
-        for(int i=0;i<len;i++){
-            answer=Math.max(answer,DP(i,len-1,triangle,dp));
+        int h=triangle.length;
+        int[][]dp=new int[h][h];
+        dp[0][0]=triangle[0][0];
+        for(int i=0;i<h;i++){
+            for(int j=0;j<=i;j++){
+                if(dp[i][j]!=0)continue;
+                if(j==0)dp[i][j]=dp[i-1][j]+triangle[i][j];
+                else if(j==i)dp[i][j]=dp[i-1][j-1]+triangle[i][j];
+                else
+                    dp[i][j]=Math.max(dp[i-1][j],dp[i-1][j-1])+triangle[i][j];
+            }
+        }
+        for(int i=0;i<h;i++){
+            answer=Math.max(answer,dp[h-1][i]);
         }
         return answer;
-    }
-    
-    static int DP(int x,int y,int[][]triangle,int [][]dp){
-        if(dp[y][x]!=0)return dp[y][x];
-        
-        int cur=triangle[y][x];
-        if(y==0)return cur;
-        
-        if(x==0)return dp[y][x]=Math.max(dp[y][x],cur+DP(x,y-1,triangle,dp)) ;
-        if(x==triangle[y].length-1)return dp[y][x]=Math.max(dp[y][x],cur+DP(x-1,y-1,triangle,dp));
-        
-        return dp[y][x]=Math.max(dp[y][x],(cur+Math.max(DP(x-1,y-1,triangle,dp),DP(x,y-1,triangle,dp))));
     }
 }
