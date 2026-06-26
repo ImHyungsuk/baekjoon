@@ -1,60 +1,70 @@
 import java.util.*;
 class Solution {
-    static int MAX=102;
-    static int[]dx={1,-1,0,0};
-    static int[]dy={0,0,1,-1};
     public int solution(int[][] rectangle, int characterX, int characterY, int itemX, int itemY) {
         int answer = 0;
-        int [][]board=new int[MAX][MAX];
-        for(int[]r:rectangle){
-            int x1=r[0]*2;
-            int y1=r[1]*2;
-            int x2=r[2]*2;
-            int y2=r[3]*2;
+        int[][] map=new int [101][101];
+        for(int i=0;i<rectangle.length;i++){
+            int x1=rectangle[i][0]*2;
+            int y1=rectangle[i][1]*2;
+            int x2=rectangle[i][2]*2;
+            int y2=rectangle[i][3]*2;
             for(int x=x1;x<=x2;x++){
                 for(int y=y1;y<=y2;y++){
-                    board[y][x]=1;
+                    if(x==x1||x==x2||y==y1||y==y2){
+                        if(map[y][x]==2)continue;
+                        map[y][x]=1;
+                    }
+                    else map[y][x]=2;
                 }
             }
         }
-        for(int[]r:rectangle){
-            int x1=r[0]*2;
-            int y1=r[1]*2;
-            int x2=r[2]*2;
-            int y2=r[3]*2;
-            for(int x=x1+1;x<x2;x++){
-                for(int y=y1+1;y<y2;y++){
-                    board[y][x]=0;
-                }
-            }
-        }
-        answer=bfs(characterX*2,characterY*2,itemX*2,itemY*2,board);
+        // StringBuilder sb= new StringBuilder();
+        // for(int i=1;i<21;i++){
+        //     for(int j=1;j<21;j++){
+        //         sb.append(map[j][i]).append(" ");
+        //     }
+        //     sb.append("\n");
+        // }
+        // System.out.println(sb);
+        answer=bfs(map, characterX*2,characterY*2, itemX*2,itemY*2)/2;
         return answer;
     }
     
-    static int bfs(int cX,int cY,int iX,int iY,int[][]board){
-        int ret=0;
-        boolean[][]visited=new boolean[MAX][MAX];
-        Queue<int[]>q=new LinkedList<>();
-        q.add(new int[]{cX,cY,0});
-        visited[cY][cX]=true;
+    int bfs(int [][]map,int characterX, int characterY, int itemX, int itemY){
+        int[]dx={-1,1,0,0};
+        int[]dy={0,0,-1,1};
+        Queue<Node>q=new LinkedList<>();
+        boolean[][]visited=new boolean[map.length][map[0].length];
+        
+        q.add(new Node(characterX,characterY,0));
+        visited[characterY][characterX]=true;
+        
         while(!q.isEmpty()){
-            int[]cur=q.poll();
-            if(cur[0]==iX&&cur[1]==iY)
-                return cur[2]/2;
+            Node cur=q.poll();
+            int curX=cur.x;
+            int curY=cur.y;
+            int curC=cur.cost;
+            // System.out.printf("x: %d, y: %d, cost:%d\n",curX,curY,curC);
+            if(curX==itemX&&curY==itemY){
+                return curC;
+            }
             for(int i=0;i<4;i++){
-                int nX=cur[0]+dx[i];
-                int nY=cur[1]+dy[i];
-                
-                if(nX<0||nX>=102||nY<0||nY>=102||visited[nY][nX])
-                    continue;
-                
-                if(board[nY][nX]==1){
-                    q.add(new int[]{nX,nY,cur[2]+1});
-                    visited[nY][nX]=true;
-                }
+                int nx=curX+dx[i];
+                int ny=curY+dy[i];
+                if(nx<0||ny<0||nx>100||ny>100||map[ny][nx]!=1||visited[ny][nx])continue;
+                q.add(new Node(nx,ny,curC+1));
+                visited[ny][nx]=true;
             }
         }
-        return 0;
+        return -1;
+    }
+}
+
+class Node{
+    int x, y, cost;
+    Node(int x, int y, int cost){
+        this.x=x;
+        this.y=y;
+        this.cost=cost;
     }
 }
