@@ -1,27 +1,18 @@
-import java.util.*;
 class Solution {
-    static int[][] map;
-    static long[][]dp;
     static long div=1_000_000_007;
     public int solution(int m, int n, int[][] puddles) {
         int answer = 0;
-        map=new int[n][m];
-        for(int i=0;i<n;i++){
-            Arrays.fill(map[i],1);
+        long[][]dp=new long[n+1][m+1];
+        for(int i=0;i<puddles.length;i++){
+            dp[puddles[i][1]][puddles[i][0]]=-1;
         }
-        for(int[]p:puddles){
-            map[p[1]-1][p[0]-1]=0;
-        }
-        dp=new long[n][m];
-        answer=(int)DP(0,0,m,n);
+        answer=(int)(DP(dp,m,n)%div);
         return answer;
     }
     
-    private long DP(int x,int y,int m,int n){
-        if(x==m-1&&y==n-1) return 1;
-        if(x>=m||y>=n)return 0;
-        if(map[y][x]==0) return 0;
-        if(dp[y][x]!=0)return dp[y][x];
-        return dp[y][x]=(DP(x+1,y,m,n)+DP(x,y+1,m,n))%div;
+    long DP(long[][]dp,int x, int y){
+        if(x<=0||y<=0||dp[y][x]==-1)return 0;
+        if(x==1&&y==1)return 1;
+        return dp[y][x] = (dp[y][x] != 0 ? dp[y][x] : DP(dp,x-1,y)+DP(dp,x,y-1))%div;
     }
 }
