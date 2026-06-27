@@ -7,5 +7,5 @@ when status='RESERVED' then '예약중'
 end
 status
 from used_goods_board
-where created_Date='2022-10-05'
+where date_format(created_Date,'%Y-%m-%d')='2022-10-05'
 order by board_id desc
