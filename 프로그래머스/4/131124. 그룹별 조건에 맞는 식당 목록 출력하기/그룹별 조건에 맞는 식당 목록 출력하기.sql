@@ -1,18 +1,17 @@
 -- 코드를 입력하세요
-with review_count as(
-    select member_id,count(*)as cnt
-    from rest_review 
+SELECT
+m.member_name,
+r.review_text,
+r.review_date
+from member_profile m
+join rest_review r
+on m.member_id=r.member_id
+join (
+    select member_id, count(review_id) cnt
+    from rest_review
     group by member_id
-),
-max_count as(
-    select max(cnt) as max_cnt from review_count
-)
-select
-mp.member_name,
-rr.review_text,
-DATE_FORMAT(rr.review_date,"%Y-%m-%d")
-from review_count rc
-join max_count mc on rc.cnt=mc.max_cnt
-join member_profile mp on rc.member_id=mp.member_id
-join rest_review rr on rc.member_id=rr.member_id
-order by rr.review_date ,rr.review_text asc
+    order by cnt desc
+    limit 1
+) as rc
+on r.member_id=rc.member_id
+order by r.review_date asc, r.review_text asc
