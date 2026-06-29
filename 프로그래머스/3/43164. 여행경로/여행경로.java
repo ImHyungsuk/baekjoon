@@ -2,35 +2,31 @@ import java.util.*;
 class Solution {
     public String[] solution(String[][] tickets) {
         String[] answer = {};
-        Arrays.sort(tickets,(String[]s1,String[]s2)->s1[1].compareTo(s2[1]));
-        Set<String>set=new HashSet<>();
-        for(int i=0;i<tickets.length;i++){
-            set.add(tickets[i][0]);
-            set.add(tickets[i][1]);
-        }
-        boolean[]visited=new boolean[tickets.length];
+        Arrays.sort(tickets,(String[]a,String[]b)->{
+            if(a[0].equals(b[0])) return a[1].compareTo(b[1]);
+            else return a[0].compareTo(b[0]);
+        });
+        boolean[]used=new boolean[tickets.length];
+        // StringBuilder sb=new StringBuilder();
+        // for(int i=0;i<tickets.length;i++){
+        //     sb.append(tickets[i][0]).append(" ").append(tickets[i][1]).append("\n");
+        // }
+        // System.out.println(sb);
         answer=new String[tickets.length+1];
         answer[0]="ICN";
-        answer=dfs(tickets,answer,visited,0);
-        
+        dfs("ICN",answer,tickets,used,1);
         return answer;
     }
     
-    static String[]dfs(String[][]tickets,String[]path,boolean[]visited,int idx){
-        String cur=path[idx];
-        if(idx==tickets.length)return path;
+    boolean dfs(String cur,String[]path,String[][]tickets,boolean[]used,int idx){
+        if(idx==tickets.length+1)return true;
         for(int i=0;i<tickets.length;i++){
-            if(visited[i])continue;
-            if(tickets[i][0].equals(cur)){
-                path[idx+1]=tickets[i][1];
-                visited[i]=true;
-                
-                String[]ret=dfs(tickets,path,visited,idx+1);
-                if(ret!=null)return ret;
-                
-                visited[i]=false;
-            }
+            if(!tickets[i][0].equals(cur)||used[i])continue;
+            used[i]=true;
+            path[idx]=tickets[i][1];
+            if(dfs(tickets[i][1],path,tickets,used,idx+1)) return true;
+            used[i]=false;
         }
-        return null;
+        return false;
     }
 }
