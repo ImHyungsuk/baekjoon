@@ -1,115 +1,96 @@
 import java.util.*;
 class Solution {
-    static int[]dx={1,-1,0,0};
-    static int[]dy={0,0,1,-1};
+    static int[]dx={-1,1,0,0};
+    static int[]dy={0,0,-1,1};
     public int solution(int[][] game_board, int[][] table) {
         int answer = 0;
-        ArrayList<ArrayList<Dot>>blanks=new ArrayList<>();
-        ArrayList<ArrayList<Dot>>pieces=new ArrayList<>();
-        
-        
-        int len=game_board.length;
-        int cnt=0;
-        boolean[][]board_visited=new boolean[len][len];
-        boolean[][]table_visited=new boolean[len][len];
-        for(int i=0;i<len;i++){
-            for(int j=0;j<len;j++){
+        int l=table.length;
+        ArrayList<ArrayList<int[]>> blanks=new ArrayList<>();
+        ArrayList<ArrayList<int[]>> pieces=new ArrayList<>();
+        boolean[][]board_visited=new boolean[l][l];
+        boolean[][]table_visited=new boolean[l][l];
+        for(int i=0;i<l;i++){
+            for(int j=0;j<l;j++){
                 if(!board_visited[i][j]&&game_board[i][j]==0){
-                    blanks.add(bfs(j,i,game_board,0,board_visited));
+                    blanks.add(bfs(game_board,board_visited,j,i,0));
                 }
                 if(!table_visited[i][j]&&table[i][j]==1){
-                    pieces.add(bfs(j,i,table,1,table_visited));
+                    pieces.add(bfs(table,table_visited,j,i,1));
                 }
             }
         }
         
-        boolean []used=new boolean[pieces.size()];
-        for(ArrayList<Dot>board_piece:blanks){
-            boolean found=false;
-            for(int i=0;i<pieces.size();i++){
-                if(used[i]) continue;
-                ArrayList<Dot>piece=pieces.get(i);
+        boolean[]used=new boolean[pieces.size()];
+        for(ArrayList<int[]>b:blanks){
+            for(int idx=0;idx<pieces.size();idx++){
+                if(used[idx])continue;
+                ArrayList<int[]>p=pieces.get(idx);
+                if(b.size()!=p.size())continue;
                 for(int r=0;r<4;r++){
-                    rotate(piece);
-                    if(board_piece.equals(piece)){
-                        used[i]=true;
-                        answer+=piece.size();
-                        found=true;
+                    boolean flag=true;
+                    rotate(p);
+                    for(int i=0;i<b.size();i++){
+                        if(b.get(i)[0]!=p.get(i)[0]||b.get(i)[1]!=p.get(i)[1]){
+                            flag=false;
+                            break;
+                        }
+                    }
+                    if(flag){
+                        used[idx]=true;
+                        answer+=p.size();
                         break;
                     }
                 }
-                if(found)break;
+                if(used[idx])break;
             }
         }
-        
         return answer;
     }
     
-    static ArrayList<Dot>bfs(int x,int y,int[][]board,int target, boolean[][]visited){
-        Queue<Dot>q=new LinkedList<>();
-        ArrayList<Dot>pieces=new ArrayList<>();
-        q.add(new Dot(x,y));
+    ArrayList<int[]>bfs(int[][]map,boolean[][]visited,int x,int y,int target){
+        ArrayList<int[]>arr=new ArrayList<>();
+        int l=map.length;
+        Queue<int[]>q=new LinkedList<>();
+        q.add(new int[]{x,y});
         visited[y][x]=true;
-        int len=board.length;
         while(!q.isEmpty()){
-            Dot cur=q.poll();
-            pieces.add(cur);
+            int[]cur=q.poll();
+            arr.add(cur);
             for(int i=0;i<4;i++){
-                int nx=cur.x+dx[i];
-                int ny=cur.y+dy[i];
-                if(nx<0||ny<0||nx>=len||ny>=len)continue;
-                if(!visited[ny][nx]&&board[ny][nx]==target){
-                    visited[ny][nx]=true;
-                    q.add(new Dot(nx,ny));
-                }
+                int nx=cur[0]+dx[i];
+                int ny=cur[1]+dy[i];
+                if(nx<0||ny<0||nx>=l||ny>=l||visited[ny][nx]||map[ny][nx]!=target)continue;
+                visited[ny][nx]=true;
+                q.add(new int[]{nx,ny});
             }
         }
-        normalize(pieces);
-        return pieces;
+        normalize(arr);
+        return arr;
     }
-    
-    static void normalize(ArrayList<Dot>arr){
-        int minX=arr.get(0).x;
-        int minY=arr.get(0).y;
-        for(Dot d:arr){
-            minX=Math.min(d.x,minX);
-            minY=Math.min(d.y,minY);
+    void normalize(ArrayList<int[]>arr){
+        int minX=Integer.MAX_VALUE,minY=Integer.MAX_VALUE;
+        for(int[]a:arr){
+            if(minX>a[0]){
+                minX=a[0];
+                minY=Math.min(minY,a[1]);
+            }
         }
-        for(Dot d:arr){
-            d.x-=minX;
-            d.y-=minY;
+        for(int[]a:arr){
+            a[0]-=minX;
+            a[1]-=minY;
         }
-        arr.sort((d1,d2)->{
-            if(d1.x==d2.x)return d1.y-d2.y;
-            else return d1.x-d2.x;
+        arr.sort((a,b)->{
+            if(a[0]==b[0])return a[1]-b[1];
+            else return a[0]-b[0];
         });
     }
-    
-    static void rotate(ArrayList<Dot>arr){
-        for(Dot d:arr){
-            int tmp=d.x;
-            d.x=d.y;
-            d.y=-tmp;
+        
+    void rotate(ArrayList<int[]>arr){
+        for(int[]a:arr){
+            int tmp=a[0];
+            a[0]=-a[1];
+            a[1]=tmp;
         }
         normalize(arr);
-    }
-}
-
-class Dot{
-    int x,y;
-    public Dot(int x,int y){
-        this.x=x;
-        this.y=y;
-    }
-    
-    @Override
-    public boolean equals(Object o){
-        Dot d=(Dot)o;
-        return this.x==d.x&&this.y==d.y;
-    }
-    
-    @Override
-    public int hashCode(){
-        return Objects.hash(x,y);
     }
 }
