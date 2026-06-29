@@ -1,11 +1,12 @@
 -- 코드를 입력하세요
-SELECT ORDER_ID,
-PRODUCT_ID,
-DATE_FORMAT(OUT_DATE,'%Y-%m-%d'),
+SELECT
+order_id,
+product_id,
+out_date,
 case
-when OUT_DATE<'2022-05-02' then '출고완료'
-when OUT_DATE>='2022-05-02' then '출고대기'
-when OUT_DATE is NULL then'출고미정'
-end as '출고여부'
-from FOOD_ORDER
-order by ORDER_ID asc
+when out_date<='2022-05-02' then '출고완료'
+when out_date>'2022-05-02' then '출고대기'
+else '출고미정'
+end '출고여부'
+from food_order
+order by order_id asc
