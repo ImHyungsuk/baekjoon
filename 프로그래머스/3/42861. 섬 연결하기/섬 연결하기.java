@@ -1,12 +1,10 @@
 import java.util.*;
 class Solution {
-    static int[]parent;
+    static int[]parents;
     public int solution(int n, int[][] costs) {
         int answer = 0;
-        parent =new int[n];
-        for(int i=0;i<n;i++){
-            parent[i]=i;
-        }
+        parents=new int[n];
+        for(int i=0;i<n;i++)parents[i]=i;
         Arrays.sort(costs,(c1,c2)->c1[2]-c2[2]);
         int cnt=0;
         for(int i=0;i<costs.length;i++){
@@ -21,16 +19,14 @@ class Solution {
         }
         return answer;
     }
-    
-    static int find(int x){
-        if(parent[x]==x)return x;
-        return parent[x]=find(parent[x]);
-    }
-    
-    static void union(int a,int b){
+    void union(int a,int b){
         a=find(a);
         b=find(b);
-        if(a<b)parent[b]=a;
-        else if(a>b)parent[a]=b;
+        if(a<b)parents[b]=a;
+        else if(b<a)parents[a]=b;
+    }
+    int find(int x){
+        if(x==parents[x])return x;
+        return parents[x]=find(parents[x]);
     }
 }
