@@ -1,53 +1,47 @@
 import java.util.*;
+
 class Solution {
     public int solution(int[][] jobs) {
         int answer = 0;
-        ArrayList<Task>arr=new ArrayList<>();
-        PriorityQueue<Task> waitQ=new PriorityQueue<>();
+        ArrayList<Job>list=new ArrayList<>();
         for(int i=0;i<jobs.length;i++){
-            arr.add(new Task(i,jobs[i][0],jobs[i][1]));
+            list.add(new Job(i,jobs[i][0],jobs[i][1]));
         }
-        arr.sort((o1,o2)->o1.start-o2.start);
-        int time=0;
-        int idx=0;
-        waitQ.add(arr.get(idx++));
-        time=waitQ.peek().start;
-        while(idx<jobs.length&&time>=arr.get(idx).start) waitQ.add(arr.get(idx++));
-        while(!waitQ.isEmpty()){
-            Task cur=waitQ.poll();
-            if(time<cur.start)time=cur.start;
-            System.out.printf("time: %d cur.start: %d\n",time,cur.start);
-            time+=cur.time;
-            answer+=(time-cur.start);
-            System.out.printf("turnaround: %d\n",time-cur.start);
-            
-            if(waitQ.isEmpty()&&idx<jobs.length&&time<arr.get(idx).start) {
-                time=arr.get(idx).start;
-                waitQ.add(arr.get(idx++));
+        list.sort((j1,j2)->j1.arrive-j2.arrive);
+        PriorityQueue<Job>pq=new PriorityQueue<>((j1,j2)->{
+            if(j1.time==j2.time){
+                if(j1.arrive==j2.arrive) 
+                    return j1.num-j2.num;
+                return j1.arrive-j2.arrive;
             }
-            while(idx<jobs.length&&time>=arr.get(idx).start) waitQ.add(arr.get(idx++));
+            return j1.time-j2.time;
+        });
+        int idx=0;
+        int t=list.get(idx).arrive;
+        while(idx<jobs.length||!pq.isEmpty()){
+            while(idx<jobs.length&&list.get(idx).arrive<=t){
+                pq.add(list.get(idx++));
+            }
+            if(pq.isEmpty()){
+                t=list.get(idx).arrive;
+                continue;
+            }
+            
+            Job cur=pq.poll();
+            t+=cur.time;
+            // System.out.printf("num:%d, t: %d, arrive: %d\n",cur.num, t, cur.arrive);
+            answer+=(t-cur.arrive);
         }
         answer/=jobs.length;
         return answer;
     }
 }
 
-class Task implements Comparable<Task>{
-    int num,start,time;
-    
-    public Task(int num, int start, int time){
+class Job{
+    int num, arrive, time;
+    Job(int num,int arrive, int time){
         this.num=num;
-        this.start=start;
+        this.arrive=arrive;
         this.time=time;
-    }
-    
-    @Override
-    public int compareTo(Task o){
-            if(this.time==o.time){
-                if(this.start==o.start)
-                    return this.num-o.num;
-                return this.start-o.start;
-            }
-            return this.time-o.time;
     }
 }
