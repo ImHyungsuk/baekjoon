@@ -3,26 +3,29 @@ import java.util.*;
 class Solution {
     public int solution(int distance, int[] rocks, int n) {
         int answer = 0;
+        int l=0,r=distance;
         Arrays.sort(rocks);
-        int l=1,r=distance;
         while(l<=r){
-            int mid=(l+r)/2;
-            int remove=0;
-            int prev=0;
-            for(int rock:rocks){
-                if(rock-prev<mid)
-                    remove++;
-                else
-                    prev=rock;
+            int m=(l+r)/2;
+            int cnt=0,min=Integer.MAX_VALUE,prev=0;
+            for(int i=0;i<rocks.length;i++){
+                int len=rocks[i]-prev;
+                if(len<m){
+                    cnt++;
+                } else {
+                    prev=rocks[i];
+                    min=Math.min(min,len);
+                }
             }
-            if(distance-prev<mid)remove++;
-            
-            if(remove>n)r=mid-1;
+            if(distance-prev<m)cnt++;
+            else min=Math.min(min,distance-prev);
+            if(cnt>n)r=m-1;
             else {
-                answer=mid;
-                l=mid+1;
+                l=m+1;
+                answer=Math.max(answer,min);
             }
         }
+        
         return answer;
     }
 }
