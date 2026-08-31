@@ -1,20 +1,19 @@
-import java.util.*;
+
 class Solution {
     public long solution(int n, int[] times) {
         long answer = 0;
-        Arrays.sort(times);
-        long l=0,r=(long)times[times.length-1]*n;
+        long l=1,r=1_000_000_000_000_000_000L;
         while(l<=r){
-            long m=(l+r)/2;
             long cnt=0;
-            for(int i=0;i<times.length;i++){
-                cnt+=m/times[i];
+            long mid=(l+r)/2;
+            for(int t:times){
+                cnt+=mid/(long)t;
             }
             if(cnt<n){
-                l=m+1;
+                l=mid+1;
             }else{
-                answer=m;
-                r=m-1;
+                answer=mid;
+                r=mid-1;
             }
         }
         return answer;
