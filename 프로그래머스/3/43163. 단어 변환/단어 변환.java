@@ -3,33 +3,37 @@ import java.util.*;
 class Solution {
     public int solution(String begin, String target, String[] words) {
         int answer = 0;
-        boolean[]visited=new boolean[words.length];
+        int l=words.length;
+        boolean[] visited=new boolean[l];
         Queue<Word>q=new LinkedList<>();
         q.add(new Word(begin,0));
         while(!q.isEmpty()){
             Word cur=q.poll();
-            if(cur.word.equals(target)){
+            // System.out.println("target = "+target+" cur.value = "+cur.value+" cnt = "+cur.cnt);
+            if(cur.value.equals(target)){
+                    // System.out.println("target = "+cur.value+" cnt = "+cur.cnt);
                 answer=cur.cnt;
                 break;
             }
-            for(int i=0;i<words.length;i++){
-                if(visited[i])continue;
-                if(available(cur.word,words[i])){
+            for(int i=0;i<l;i++){
+                if(!visited[i]&&available(cur.value,words[i])){
                     visited[i]=true;
                     q.add(new Word(words[i],cur.cnt+1));
+                    // System.out.println("insert "+words[i]);
                 }
             }
         }
         return answer;
     }
     
-    
-    
-    boolean available(String cur, String nxt){
+    boolean available(String cur,String nxt){
         if(cur.length()!=nxt.length())return false;
+        int len=cur.length();
         int cnt=0;
-        for(int i=0;i<cur.length();i++){
-            if(cur.charAt(i)!=nxt.charAt(i))cnt++;
+        for(int i=0;i<len;i++){
+            if(cur.charAt(i)!=nxt.charAt(i)){
+                cnt++;
+            }
             if(cnt>=2)return false;
         }
         return true;
@@ -37,11 +41,10 @@ class Solution {
 }
 
 class Word{
-    String word;
+    String value;
     int cnt;
-    
-    Word(String word, int cnt){
-        this.word=word;
+    public Word(String value,int cnt){
+        this.value=value;
         this.cnt=cnt;
     }
 }
