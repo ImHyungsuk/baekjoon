@@ -1,32 +1,37 @@
 import java.util.*;
+
 class Solution {
     public String[] solution(String[][] tickets) {
         String[] answer = {};
+        boolean[]visited=new boolean[tickets.length];
         Arrays.sort(tickets,(String[]a,String[]b)->{
-            if(a[0].equals(b[0])) return a[1].compareTo(b[1]);
-            else return a[0].compareTo(b[0]);
+            if(a[0].equals(b[0]))
+                return a[1].compareTo(b[1]);
+            return a[0].compareTo(b[0]);
         });
-        boolean[]used=new boolean[tickets.length];
-        // StringBuilder sb=new StringBuilder();
-        // for(int i=0;i<tickets.length;i++){
-        //     sb.append(tickets[i][0]).append(" ").append(tickets[i][1]).append("\n");
-        // }
-        // System.out.println(sb);
+        ArrayList<String>path=new ArrayList<>();
+        path.add("ICN");
         answer=new String[tickets.length+1];
-        answer[0]="ICN";
-        dfs("ICN",answer,tickets,used,1);
+        path=dfs("ICN",path,tickets,visited,0);
+        for(int i=0;i<=tickets.length;i++){
+            answer[i]=path.get(i);
+        }
         return answer;
     }
     
-    boolean dfs(String cur,String[]path,String[][]tickets,boolean[]used,int idx){
-        if(idx==tickets.length+1)return true;
+    ArrayList<String>dfs(String cur,ArrayList<String>ret, String[][]tickets,boolean[]visited,int cnt){
+        if(ret.size()==tickets.length+1)
+            return ret;
         for(int i=0;i<tickets.length;i++){
-            if(!tickets[i][0].equals(cur)||used[i])continue;
-            used[i]=true;
-            path[idx]=tickets[i][1];
-            if(dfs(tickets[i][1],path,tickets,used,idx+1)) return true;
-            used[i]=false;
+            if(!visited[i]&&tickets[i][0].equals(cur)){
+                visited[i]=true;
+                ret.add(tickets[i][1]);
+                ret=dfs(tickets[i][1],ret,tickets,visited,cnt+1);
+                if(ret.size()==tickets.length+1)return ret;
+                visited[i]=false;
+            }
         }
-        return false;
+        ret.remove(ret.size()-1);
+        return ret;
     }
 }
