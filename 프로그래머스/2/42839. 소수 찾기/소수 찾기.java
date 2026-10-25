@@ -9,7 +9,7 @@ class Solution {
         isNotPrime[0]=true;
         isNotPrime[1]=true;
         for(int i=2;i<l;i++){
-            // if(isNotPrime[i])continue;
+            if(isNotPrime[i])continue;
             for(int j=2;i*j<10000000;j++){
                 isNotPrime[i*j]=true;
             }
