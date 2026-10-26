@@ -1,15 +1,12 @@
 -- 코드를 작성해주세요
-with max_length as(
-    select FISH_TYPE,max(LENGTH)LENGTH
-    from FISH_INFO
-    group by FISH_TYPE
+select fi.id,fn.fish_name,fi.length
+from fish_info fi
+join fish_name_info fn
+on fi.fish_type=fn.fish_type
+where(fi.fish_type,fi.length)
+in (
+    select fish_type,max(length)
+    from fish_info
+    group by fish_type
 )
-
-select f.ID,fn.FISH_NAME,f.LENGTH
-from FISH_INFO f
-join FISH_NAME_INFO fn
-on f.FISH_TYPE=fn.FISH_TYPE
-join max_length m
-on m.FISH_TYPE=f.FISH_TYPE
-where m.LENGTH=f.LENGTH
-order by ID asc
+order by fi.id asc 
