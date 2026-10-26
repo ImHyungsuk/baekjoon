@@ -1,24 +1,22 @@
+import java.util.*;
 class Solution {
     public int solution(String name) {
+        // System.out.println((int)('O'-'A')+" "+(int)('Z'-'O'));
         int answer = 0;
         int len=name.length();
-        int max=('Z'-'A');
-        int []count=new int[len];
-        for(int i=0;i<len;i++){
-            char c=name.charAt(i);
-            int cnt=c-'A';
-            cnt=cnt>max/2?'Z'-c+1:cnt;
-            count[i]=cnt;
-            answer+=count[i];
-        }
         int move=len-1;
-        for(int i=1;i<len;i++){
-            int tmp=i-1;
-            while(i<len&&count[i]==0)i++;
-            move=Math.min(move,2*tmp+len-i);
-            move=Math.min(move,tmp+2*(len-i));
+        boolean flag=false;
+        for(int idx=0;idx<len;idx++){
+            char c=name.charAt(idx);
+            answer+=Math.min(c-'A','Z'-c+1);
+            
+            int next=idx+1;
+            while(next<len && name.charAt(next)=='A')
+                next++;
+            
+            move=Math.min(move,2*idx+len-next);
+            move=Math.min(move,idx+2*(len-next));
         }
-        answer+=move;
-        return answer;
+        return answer+move;
     }
 }
