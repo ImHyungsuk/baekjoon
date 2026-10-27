@@ -1,17 +1,23 @@
+import java.util.*;
 class Solution {
     public String solution(String number, int k) {
         String answer = "";
-        int len=number.length()-k;
-        int idx=0;
+        Queue<Integer>q=new LinkedList<>();
+        int idx=0,len=number.length();
         StringBuilder sb=new StringBuilder();
-        for(int i=0;i<number.length();i++){
-            char c=number.charAt(i);
-            while(k>0 && sb.length()>0 && sb.charAt(sb.length()-1)<c){
+        while(idx<len){
+            char cur=number.charAt(idx);
+            // System.out.println("cur = "+cur+" "+k+" "+q.isEmpty()+" "+(q.isEmpty()?-1:q.peek()));
+            
+            while(k>0&&sb.length()>0&&sb.charAt(sb.length()-1)<cur){
                 k--;
                 sb.deleteCharAt(sb.length()-1);
             }
-            sb.append(c);
+            sb.append(cur);
+            idx++;
         }
-        return sb.substring(0,len);
+        sb.setLength(sb.length()-k);
+        answer=sb.toString();
+        return answer;
     }
 }
