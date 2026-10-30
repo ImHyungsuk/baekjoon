@@ -1,32 +1,33 @@
 import java.util.*;
+
 class Solution {
     public int solution(int distance, int[] rocks, int n) {
         int answer = 0;
+        int l=0,r=distance;
         Arrays.sort(rocks);
-        
-        int l=1,r=distance;
+        int len=rocks.length;
         while(l<=r){
-            int mid=(l+r)/2;
-            int cnt=0;
-            int prev=0;
-            for(int rock:rocks){
+            int m=(r+l)/2;
+            int cnt=0,prev=0;
+            for(int i=0;i<len;i++){
                 if(cnt>n)break;
-                if(rock-prev<mid) {
+                if(rocks[i]-prev<m){
                     cnt++;
                     continue;
                 }
-                prev=rock;
+                prev=rocks[i];
             }
-            if(distance-prev<mid) cnt++;
+            if(distance-prev<m)cnt++;
+            // System.out.println(l+" ~ "+r+": "+cnt);
             
-            if(cnt>n){
-                r=mid-1;
-            }else{
-                answer=mid;
-                l=mid+1;
+            if(cnt<=n) {
+                l=m+1;
+                answer=Math.max(answer,m);
+            }
+            else {
+                r=m-1;
             }
         }
-        
         return answer;
     }
 }
